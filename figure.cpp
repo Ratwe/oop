@@ -1,4 +1,5 @@
 #include "figure.h"
+#include "vertex.h"
 
 // Функция для инициализации фигуры, возвращает ссылку на статический объект
 // Инициализирует центр фигуры, массив вершин и массив рёбер
@@ -50,7 +51,11 @@ err_t read_figure(figure_t &figure, FILE *file)
 // Если чтение прошло успешно, обновляет фигуру
 err_t load_figure(figure_t &figure, filename_t file_name)
 {
+    printf("filename = %s\n", file_name);
+
     FILE *file = fopen(file_name, "r");
+
+    printf("file = %p\n", file);
 
     if (!file)
         return FILE_NAME_ERR;
@@ -67,6 +72,7 @@ err_t load_figure(figure_t &figure, filename_t file_name)
         figure = tmp_figure;        // Обновление фигуры
     }
 
+    printf("returning\n");
     return rc;
 }
 

@@ -2,7 +2,7 @@
 #include "err.h"
 
 // Обрабатывает запрос и возвращает код ошибки
-err_t handle_request(const request_t &request)
+err_t handle_request(const request_t request)
 {
     err_t rc = OK;
     figure_t figure = figure_init();
@@ -10,9 +10,11 @@ err_t handle_request(const request_t &request)
     switch (request.code)
     {
         case REQUEST_LOAD:
+            printf("REQUEST_LOAD\n");
             rc = load_figure(figure, request.filename);
             break;
         case REQUEST_MOVE:
+            printf("REQUEST_MOVE\n");
             rc = move_figure(figure, request.move);
             break;
         case REQUEST_SCALE:
@@ -31,5 +33,6 @@ err_t handle_request(const request_t &request)
             break;
     }
 
+    printf("rc = %d\n", rc);
     return rc;
 }

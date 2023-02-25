@@ -30,5 +30,7 @@ struct request_t
     };
 };
 
+// Обрабатывает запрос и возвращает код ошибки
+err_t handle_request(const request_t request);
 
 #endif // REQUEST_H

@@ -251,7 +251,7 @@ err_t turn_vertexes(vertex_arr_t &vertexes, const vertex_t &centre, const turn_t
 }
 
 // Освобождает память, выделенную под массив вершин.
-void destroy_vrtx_arr(vertex_arr_t &vertexes)
+void destroy_vertex_arr(vertex_arr_t &vertexes)
 {
     free(vertexes.data);
     vertexes_init(vertexes);
