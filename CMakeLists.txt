@@ -17,6 +17,18 @@ set(PROJECT_SOURCES
         mainwindow.cpp
         mainwindow.h
         mainwindow.ui
+        request.cpp
+        request.h
+        err.cpp
+        err.h
+        figure.cpp
+        figure.h
+        vertex.cpp
+        vertex.h
+        links.cpp
+        links.h
+        draw.cpp
+        draw.h
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
