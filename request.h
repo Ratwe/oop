@@ -2,7 +2,8 @@
 #define REQUEST_H
 
 #include "draw.h"
-#include "figure.h"
+
+#define filename "D:/Code/QT/lab_01/data.txt"
 
 // Перечисление кодов запросов
 enum request_code_t
@@ -22,7 +23,6 @@ struct request_t
     request_code_t code;    // Код запроса
     union                   // Объединение для передачи параметров запроса в зависимости от кода
     {
-        filename_t filename;   // Имя файла (используется при запросе на загрузку данных из файла)
         move_t move;           // Параметры перемещения объекта
         scale_t scale;         // Параметры масштабирования объекта
         turn_t turn;           // Параметры поворота объекта

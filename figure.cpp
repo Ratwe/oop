@@ -42,6 +42,8 @@ err_t read_figure(figure_t &figure, FILE *file)
     if ((rc = check_links(figure.links, get_vertexes_num(figure.vertexes))))
         destroy_figure(figure);
 
+    printf("read %p, %d, %p, %d\n", figure.links.data, figure.links.len, figure.vertexes.data, figure.vertexes.len);
+
     return rc;
 }
 

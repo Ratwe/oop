@@ -7,7 +7,6 @@
 #include <QGraphicsView>
 #include <QGraphicsPixmapItem>
 #include <QPixmap>
-#include <QFileDialog>
 #include <QInputDialog>
 #include <QPointF>
 #include <QtMath>
@@ -19,10 +18,10 @@ MainWindow::MainWindow(QWidget *parent)
     openAction = new QAction(tr("&Open"), this);
     connect(openAction, &QAction::triggered, this, &MainWindow::openImage);
 
-//    // Создаем QAction для увеличения изображения и связываем его со слотом zoomIn()
-//    zoomInAction = new QAction(tr("Zoom &In"), this);
-//    zoomInAction->setEnabled(true);
-//    connect(zoomInAction, &QAction::triggered, this, &MainWindow::zoomIn);
+    // Создаем QAction для увеличения изображения и связываем его со слотом zoomIn()
+    scaleAction = new QAction(tr("&Scale"), this);
+    scaleAction->setEnabled(true);
+    connect(scaleAction, &QAction::triggered, this, &MainWindow::scale);
 
 //    // Создаем QAction для уменьшения изображения и связываем его со слотом zoomOut()
 //    zoomOutAction = new QAction(tr("Zoom &Out"), this);
@@ -44,8 +43,8 @@ MainWindow::MainWindow(QWidget *parent)
     fileMenu->addAction(openAction);
 
     // Создаем меню Edit и добавляем туда QAction для увеличения, уменьшения, поворота и перемещения изображения
-//    QMenu *editMenu = menuBar()->addMenu(tr("&Edit"));
-//    editMenu->addAction(zoomInAction);
+    QMenu *editMenu = menuBar()->addMenu(tr("&Edit"));
+    editMenu->addAction(scaleAction);
 //    editMenu->addAction(zoomOutAction);
 //    editMenu->addAction(rotateAction);
 //    editMenu->addAction(moveAction);
@@ -58,12 +57,27 @@ MainWindow::MainWindow(QWidget *parent)
     openImage();
 }
 
+canvas_t MainWindow::init_canvas()
+{
+    static canvas_t canvas;
+
+    canvas.scene = MainWindow::scene;
+    canvas.width = MainWindow::scene->width();
+    canvas.height = MainWindow::scene->height();
+
+    printf("%dx%d\n", canvas.width, canvas.height);
+
+    return canvas;
+}
+
 void MainWindow::handle_rc(const err_t rc)
 {
+    printf("handling_rc = %d\n", rc);
+
     if (!rc)
     {
         canvas_t canvas = init_canvas();
-        request_t draw_request = {.code = DRAW, .canvas = canvas};
+        request_t draw_request = {.code = REQUEST_DRAW, .canvas = canvas};
         handle_request(draw_request);
     }
     else
@@ -73,9 +87,7 @@ void MainWindow::handle_rc(const err_t rc)
 void MainWindow::openImage()
 {
     // Создание структуры request_t с указанием кода REQUEST_LOAD и имени файла "data.txt"
-    request_t load_request = {.code = REQUEST_LOAD, .filename = "D:/Code/QT/lab_01/data.txt"};
-
-    printf("load_request.code = %s\n", load_request.code);
+    request_t load_request = {.code = REQUEST_LOAD};
 
     // Обработка запроса на загрузку данных из файла
     err_t rc = handle_request(load_request);
@@ -84,19 +96,17 @@ void MainWindow::openImage()
     handle_rc(rc);
 }
 
-//void MainWindow::zoomIn()
-//{
-//    QGraphicsPixmapItem *item = dynamic_cast<QGraphicsPixmapItem*>(scene->items().first());
-//    if (item)
-//        item->setScale(item->scale() * 1.2);
-//}
+void MainWindow::scale()
+{
+    // Создание структуры request_t с указанием кода REQUEST_LOAD и имени файла "data.txt"
+    request_t load_request = {.code = REQUEST_SCALE};
 
-//void MainWindow::zoomOut()
-//{
-//    QGraphicsPixmapItem *item = dynamic_cast<QGraphicsPixmapItem*>(scene->items().first());
-//    if (item)
-//        item->setScale(item->scale() / 1.2);
-//}
+    // Обработка запроса на загрузку данных из файла
+    err_t rc = handle_request(load_request);
+
+    // Обработка ошибки при обработке запроса
+    handle_rc(rc);
+}
 
 //void MainWindow::rotate()
 //{
@@ -135,8 +145,8 @@ MainWindow::~MainWindow()
     delete scene;
     delete view;
     delete openAction;
-    delete zoomInAction;
-    delete zoomOutAction;
-    delete rotateAction;
-    delete moveAction;
+//    delete zoomInAction;
+//    delete zoomOutAction;
+//    delete rotateAction;
+//    delete moveAction;
 }

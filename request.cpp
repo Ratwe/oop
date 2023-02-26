@@ -7,11 +7,15 @@ err_t handle_request(const request_t request)
     err_t rc = OK;
     figure_t figure = figure_init();
 
+    rc = load_figure(figure, filename);
+    if (rc)
+        return rc;
+
     switch (request.code)
     {
         case REQUEST_LOAD:
             printf("REQUEST_LOAD\n");
-            rc = load_figure(figure, request.filename);
+            rc = load_figure(figure, filename);
             break;
         case REQUEST_MOVE:
             printf("REQUEST_MOVE\n");
@@ -24,6 +28,7 @@ err_t handle_request(const request_t request)
             rc = turn_figure(figure, request.turn);
             break;
         case REQUEST_DRAW:
+            printf("REQUEST_DRAW\n");
             rc = draw_figure(figure, request.canvas);
             break;
         case REQUEST_QUIT:

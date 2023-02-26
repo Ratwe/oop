@@ -24,7 +24,7 @@ public:
 
 private slots:
     void openImage();
-//    void zoomIn();
+    void scale();
 //    void zoomOut();
 //    void rotate();
 //    void move();
@@ -34,8 +34,7 @@ private slots:
 
 private:
     QAction *openAction;
-    QAction *zoomInAction;
-    QAction *zoomOutAction;
+    QAction *scaleAction;
     QAction *rotateAction;
     QAction *moveAction;
     QGraphicsScene *scene;

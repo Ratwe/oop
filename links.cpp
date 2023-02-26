@@ -11,7 +11,7 @@ void links_init(links_arr_t &links)
 
 err_t allocate_links_arr(links_arr_t &links)
 {
-    links.data = (link_t *) malloc(sizeof(link_t) * links.len);
+    links.data = (link_t *) calloc(sizeof(link_t), links.len);
 
     if (!links.data)
         return MEMORY_ERR;
