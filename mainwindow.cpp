@@ -46,15 +46,10 @@ MainWindow::MainWindow(QWidget *parent)
     scaleAction->setEnabled(true);
     connect(scaleAction, &QAction::triggered, this, &MainWindow::scale);
 
-//    // Создаем QAction для уменьшения изображения и связываем его со слотом zoomOut()
-//    zoomOutAction = new QAction(tr("Zoom &Out"), this);
-//    zoomOutAction->setEnabled(true);
-//    connect(zoomOutAction, &QAction::triggered, this, &MainWindow::zoomOut);
-
-//    // Создаем QAction для поворота изображения и связываем его со слотом rotate()
-//    rotateAction = new QAction(tr("&Rotate"), this);
-//    rotateAction->setEnabled(true);
-//    connect(rotateAction, &QAction::triggered, this, &MainWindow::rotate);
+    // Создаем QAction для поворота изображения и связываем его со слотом rotate()
+    rotateAction = new QAction(tr("&Rotate"), this);
+    rotateAction->setEnabled(true);
+    connect(rotateAction, &QAction::triggered, this, &MainWindow::rotate);
 
 //    // Создаем QAction для перемещения изображения и связываем его со слотом move()
 //    moveAction = new QAction(tr("&Move"), this);
@@ -68,8 +63,7 @@ MainWindow::MainWindow(QWidget *parent)
     // Создаем меню Edit и добавляем туда QAction для увеличения, уменьшения, поворота и перемещения изображения
     QMenu *editMenu = menuBar()->addMenu(tr("&Edit"));
     editMenu->addAction(scaleAction);
-//    editMenu->addAction(zoomOutAction);
-//    editMenu->addAction(rotateAction);
+    editMenu->addAction(rotateAction);
 //    editMenu->addAction(moveAction);
 
     // Создаем QGraphicsScene и QGraphicsView для отображения изображения
@@ -137,20 +131,38 @@ void MainWindow::scale()
     handle_rc(rc);
 }
 
-//void MainWindow::rotate()
-//{
-//    QGraphicsPixmapItem *item = dynamic_cast<QGraphicsPixmapItem*>(scene->items().first());
-//    if (item) {
-//        bool ok;
-//        int angle = QInputDialog::getInt(this, tr("Rotate"), tr("Angle (degrees):"), 0, -359, 359, 1, &ok);
-//        if (ok) {
-//            item->setRotation(item->rotation() + angle);
-//            QPointF center = item->boundingRect().center();
-//            QPointF offset = center - item->mapToScene(center);
-//            item->setPos(item->pos() + offset);
-//        }
-//    }
-//}
+void MainWindow::rotate()
+{
+    err_t rc = OK;
+    bool ok;
+    double angle1 = QInputDialog::getInt(this, tr("Rotate"), tr("Angle 1 (degrees):"), 0, -359, 359, 1, &ok);
+    if (ok) {
+        double angle2 = QInputDialog::getInt(this, tr("Rotate"), tr("Angle 2 (degrees):"), 0, -359, 359, 1, &ok);
+        if (ok) {
+            double angle3 = QInputDialog::getInt(this, tr("Rotate"), tr("Angle 3 (degrees):"), 0, -359, 359, 1, &ok);
+            if (ok) {
+                // Создание структуры request_t с указанием кода REQUEST_ROTATE и углов поворота
+                request_t turn_request = {
+                    .code = REQUEST_TURN,
+                    .turn = { angle1, angle2, angle3 }
+                };
+
+                // Обработка запроса на поворот
+                rc = handle_request(turn_request);
+            } else {
+                rc = INT_ERR;
+            }
+        } else {
+            rc = INT_ERR;
+        }
+    } else {
+        rc = INT_ERR;
+    }
+
+    handle_rc(rc);
+}
+
+
 
 //void MainWindow::move()
 //{
@@ -174,8 +186,6 @@ MainWindow::~MainWindow()
     delete scene;
     delete view;
     delete openAction;
-//    delete zoomInAction;
-//    delete zoomOutAction;
-//    delete rotateAction;
+    delete rotateAction;
 //    delete moveAction;
 }

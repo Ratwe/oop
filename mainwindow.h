@@ -25,8 +25,7 @@ public:
 private slots:
     void openImage();
     void scale();
-//    void zoomOut();
-//    void rotate();
+    void rotate();
 //    void move();
 
     void handle_rc(const err_t rc);
