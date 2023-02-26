@@ -51,10 +51,10 @@ MainWindow::MainWindow(QWidget *parent)
     rotateAction->setEnabled(true);
     connect(rotateAction, &QAction::triggered, this, &MainWindow::rotate);
 
-//    // Создаем QAction для перемещения изображения и связываем его со слотом move()
-//    moveAction = new QAction(tr("&Move"), this);
-//    moveAction->setEnabled(true);
-//    connect(moveAction, &QAction::triggered, this, &MainWindow::move);
+    // Создаем QAction для перемещения изображения и связываем его со слотом move()
+    moveAction = new QAction(tr("&Move"), this);
+    moveAction->setEnabled(true);
+    connect(moveAction, &QAction::triggered, this, &MainWindow::move);
 
     // Создаем меню File и добавляем туда QAction для открытия изображения
     QMenu *fileMenu = menuBar()->addMenu(tr("&File"));
@@ -64,7 +64,7 @@ MainWindow::MainWindow(QWidget *parent)
     QMenu *editMenu = menuBar()->addMenu(tr("&Edit"));
     editMenu->addAction(scaleAction);
     editMenu->addAction(rotateAction);
-//    editMenu->addAction(moveAction);
+    editMenu->addAction(moveAction);
 
     // Создаем QGraphicsScene и QGraphicsView для отображения изображения
     scene = new QGraphicsScene(this);
@@ -164,21 +164,37 @@ void MainWindow::rotate()
 
 
 
-//void MainWindow::move()
-//{
-//    QGraphicsPixmapItem *item = dynamic_cast<QGraphicsPixmapItem*>(scene->items().first());
-//    if (item) {
-//        bool ok;
-//        int x = QInputDialog::getInt(this, tr("Move"), tr("X:"), 0, -10000, 10000, 1, &ok);
-//        if (!ok)
-//            return;
-//        int y = QInputDialog::getInt(this, tr("Move"), tr("Y:"), 0, -10000, 10000, 1, &ok);
-//        if (!ok)
-//            return;
-//        QPointF newPos = item->pos() + QPointF(x, y);
-//        item->setPos(newPos);
-//    }
-//}
+void MainWindow::move()
+{
+    err_t rc = OK;
+    bool ok;
+    double x = QInputDialog::getInt(this, tr("Move"), tr("X:"), 0, -10000, 10000, 1, &ok);
+    if (ok) {
+        double y = QInputDialog::getInt(this, tr("Move"), tr("Y:"), 0, -10000, 10000, 1, &ok);
+        if (ok) {
+            double z = QInputDialog::getInt(this, tr("Move"), tr("Z:"), 0, -10000, 10000, 1, &ok);
+            if (ok) {
+                // Создание структуры request_t с указанием кода REQUEST_ROTATE и углов поворота
+                request_t turn_request = {
+                    .code = REQUEST_MOVE,
+                    .move = { x, y, z }
+                };
+
+                // Обработка запроса на поворот
+                rc = handle_request(turn_request);
+            } else {
+                rc = INT_ERR;
+            }
+        } else {
+            rc = INT_ERR;
+        }
+    } else {
+        rc = INT_ERR;
+    }
+
+
+    handle_rc(rc);
+}
 
 
 MainWindow::~MainWindow()
@@ -187,5 +203,5 @@ MainWindow::~MainWindow()
     delete view;
     delete openAction;
     delete rotateAction;
-//    delete moveAction;
+    delete moveAction;
 }

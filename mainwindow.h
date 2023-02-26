@@ -26,7 +26,7 @@ private slots:
     void openImage();
     void scale();
     void rotate();
-//    void move();
+    void move();
 
     void handle_rc(const err_t rc);
     canvas_t init_canvas();
