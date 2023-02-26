@@ -15,6 +15,7 @@
 #define NO_DATA_ERR_MSG   "Фигура не загружена!"
 #define UNKNOWN_CODE_ERR_MSG "Неизвестная команда!"
 #define UNKNOWN_ERR_MSG      "Неизвестная ошибка!"
+#define INT_ERR_MSG          "Недопустимое число!"
 
 enum err_t {
     OK,
@@ -27,7 +28,9 @@ enum err_t {
     MOVE_ERR,
     SCALE_ERR,
     TURN_ERR,
-    UNKNOWN_CODE_ERR
+    UNKNOWN_CODE_ERR,
+    INT_ERR,
+    PRINT_ERR
 };
 
 void handle_error(const err_t code);

@@ -21,6 +21,7 @@ figure_t &figure_init(void);
 
 // Загрузка фигуры из файла
 err_t load_figure(figure_t &figure, filename_t file_name);
+err_t save_figure(figure_t &figure, filename_t file_name);
 
 // Перемещение фигуры
 err_t move_figure(figure_t &figure, const move_t &move);

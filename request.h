@@ -2,8 +2,7 @@
 #define REQUEST_H
 
 #include "draw.h"
-
-#define filename "D:/Code/QT/lab_01/data.txt"
+#define FILENAME "D:/Code/QT/lab_01/data.txt"
 
 // Перечисление кодов запросов
 enum request_code_t

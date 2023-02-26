@@ -1,5 +1,6 @@
 #include "vertex.h"
 #include <cmath>
+#include <qDebug>
 
 // Функция to_radians() преобразует угол в градусах в радианы.
 // Она использует значение PI (3.14159265358979323846),
@@ -62,6 +63,13 @@ err_t read_vertex(vertex_t &vertex, FILE *file)
     return OK;
 }
 
+err_t save_vertex(vertex_t &vertex, FILE *file)
+{
+    fprintf(file, "%lf %lf %lf\n", vertex.x, vertex.y, vertex.z);
+
+    return OK;
+}
+
 // Функция чтения количества вершин из файла
 // Входные параметры: ссылка на массив вершин, указатель на файл
 // Возвращаемое значение: код ошибки (OK, READ_ERR, VALUE_ERR)
@@ -72,6 +80,13 @@ err_t read_vertexes_len(vertex_arr_t &vertexes, FILE *file)
 
     if (!vertexes.len)
         return VALUE_ERR;
+
+    return OK;
+}
+
+err_t save_vertexes_len(vertex_arr_t &vertexes, FILE *file)
+{
+    fprintf(file, "%lu\n", vertexes.len);
 
     return OK;
 }
@@ -89,6 +104,16 @@ err_t read_vertexes_data(vertex_arr_t &vertexes, FILE *file)
     return rc;
 }
 
+err_t save_vertexes_data(vertex_arr_t &vertexes, FILE *file)
+{
+    err_t rc = OK;
+
+    for (size_t i = 0; !rc && i < vertexes.len; i++)
+        rc = save_vertex(vertexes.data[i], file);
+
+    return rc;
+}
+
 // Функция чтения всех вершин из файла
 // Входные параметры: ссылка на массив вершин, указатель на файл
 // Возвращаемое значение: код ошибки (OK, READ_ERR, MEMORY_ERR)
@@ -101,6 +126,19 @@ err_t read_vertexes(vertex_arr_t &vertexes, FILE *file)
 
     if (!rc)
         rc = read_vertexes_data(vertexes, file);
+
+    if (rc)
+        destroy_vertex_arr(vertexes);
+
+    return rc;
+}
+
+err_t save_vertexes(vertex_arr_t &vertexes, FILE *file)
+{
+    err_t rc = save_vertexes_len(vertexes, file);
+
+    if (!rc)
+        rc = save_vertexes_data(vertexes, file);
 
     if (rc)
         destroy_vertex_arr(vertexes);
@@ -183,6 +221,8 @@ err_t move_vertexes(vertex_arr_t &vertexes, const move_t &move)
 // Масштабирование массива вершин относительно заданной центральной точки
 err_t scale_vertexes(vertex_arr_t &vertexes, const vertex_t &centre, const scale_t &scale)
 {
+    qDebug() << "scale coeffs:" << scale.kx << scale.ky << scale.kz;
+
     if (!vertexes.data || !vertexes.len)
         return NO_DATA_ERR;
 

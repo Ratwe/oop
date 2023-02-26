@@ -35,6 +35,9 @@ void handle_error(const err_t code)
         case UNKNOWN_CODE_ERR:
             QMessageBox::critical(NULL, TITLE, UNKNOWN_CODE_ERR_MSG);
             break;
+        case INT_ERR:
+            QMessageBox::critical(NULL, TITLE, INT_ERR_MSG);
+            break;
         default:
             QMessageBox::critical(NULL, TITLE, UNKNOWN_ERR_MSG);
             break;

@@ -54,9 +54,11 @@ size_t get_vertexes_num(const vertex_arr_t &vertexes);
 
 // Чтение вершины из файла
 err_t read_vertex(vertex_t &vertex, FILE *file);
+err_t save_vertex(vertex_t &vertex, FILE *file);
 
 // Чтение массива вершин из файла
 err_t read_vertexes(vertex_arr_t &vertexes, FILE *file);
+err_t save_vertexes(vertex_arr_t &vertexes, FILE *file);
 
 // Перемещение вершины
 void move_vertex(vertex_t &vertex, const move_t &move);

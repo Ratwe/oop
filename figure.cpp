@@ -42,8 +42,6 @@ err_t read_figure(figure_t &figure, FILE *file)
     if ((rc = check_links(figure.links, get_vertexes_num(figure.vertexes))))
         destroy_figure(figure);
 
-    printf("read %p, %d, %p, %d\n", figure.links.data, figure.links.len, figure.vertexes.data, figure.vertexes.len);
-
     return rc;
 }
 
@@ -53,12 +51,7 @@ err_t read_figure(figure_t &figure, FILE *file)
 // Если чтение прошло успешно, обновляет фигуру
 err_t load_figure(figure_t &figure, filename_t file_name)
 {
-    printf("filename = %s\n", file_name);
-
     FILE *file = fopen(file_name, "r");
-
-    printf("file = %p\n", file);
-
     if (!file)
         return FILE_NAME_ERR;
 
@@ -74,7 +67,30 @@ err_t load_figure(figure_t &figure, filename_t file_name)
         figure = tmp_figure;        // Обновление фигуры
     }
 
-    printf("returning\n");
+    return rc;
+}
+
+err_t save_figure(figure_t &figure, filename_t file_name)
+{
+    FILE *file = fopen(file_name, "w");
+    if (!file)
+        return FILE_NAME_ERR;
+
+    figure_t tmp_figure;
+
+    err_t rc = OK;
+
+    if ((rc = save_vertex(figure.centre, file)))
+        return rc;
+
+    if ((rc = save_vertexes(figure.vertexes, file)))
+        return rc;
+
+    if ((rc = save_links(figure.links, file)))
+        return rc;
+
+    fclose(file);
+
     return rc;
 }
 

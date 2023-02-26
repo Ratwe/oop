@@ -23,6 +23,7 @@ void links_init(links_arr_t &links);
 
 // Чтение массива ребер из файла
 err_t read_links(links_arr_t &links, FILE *file);
+err_t save_links(links_arr_t &links, FILE *file);
 
 // Проверка корректности массива ребер
 err_t check_links(const links_arr_t &links, const size_t max_vertex_num);

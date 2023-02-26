@@ -7,7 +7,7 @@ err_t handle_request(const request_t request)
     err_t rc = OK;
     figure_t figure = figure_init();
 
-    rc = load_figure(figure, filename);
+    rc = load_figure(figure, FILENAME);
     if (rc)
         return rc;
 
@@ -15,7 +15,7 @@ err_t handle_request(const request_t request)
     {
         case REQUEST_LOAD:
             printf("REQUEST_LOAD\n");
-            rc = load_figure(figure, filename);
+            rc = load_figure(figure, FILENAME);
             break;
         case REQUEST_MOVE:
             printf("REQUEST_MOVE\n");
@@ -38,6 +38,10 @@ err_t handle_request(const request_t request)
             break;
     }
 
-    printf("rc = %d\n", rc);
+    if (rc)
+        return rc;
+
+    rc = save_figure(figure, FILENAME);
+
     return rc;
 }

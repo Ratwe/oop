@@ -10,10 +10,33 @@
 #include <QInputDialog>
 #include <QPointF>
 #include <QtMath>
+#include <QFile>
+
+// Копирование содержимого файла sourceFileName в файл destinationFileName
+bool copyFile(const QString& sourceFileName, const QString& destinationFileName)
+{
+    QFile sourceFile(sourceFileName);
+    QFile destinationFile(destinationFileName);
+
+    if (!sourceFile.open(QIODevice::ReadOnly) || !destinationFile.open(QIODevice::WriteOnly))
+        return false;
+
+    QByteArray buffer;
+    while (!sourceFile.atEnd()) {
+        buffer = sourceFile.read(8192);
+        if (destinationFile.write(buffer) == -1)
+            return false;
+    }
+
+    return true;
+}
+
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
 {
+    copyFile("D:/Code/QT/lab_01/data_o.txt", "D:/Code/QT/lab_01/data.txt");
+
     // Создаем QAction для открытия изображения и связываем его со слотом openImage()
     openAction = new QAction(tr("&Open"), this);
     connect(openAction, &QAction::triggered, this, &MainWindow::openImage);
@@ -54,26 +77,24 @@ MainWindow::MainWindow(QWidget *parent)
     view = new QGraphicsView(scene, this);
     setCentralWidget(view);
 
-    openImage();
+    setFixedSize(800, 600);
+    scene->setSceneRect(0, 0, 700, 500);
+//    openImage();
 }
 
 canvas_t MainWindow::init_canvas()
 {
     static canvas_t canvas;
 
-    canvas.scene = MainWindow::scene;
-    canvas.width = MainWindow::scene->width();
-    canvas.height = MainWindow::scene->height();
-
-    printf("%dx%d\n", canvas.width, canvas.height);
+    canvas.scene = scene;
+    canvas.width = scene->width();
+    canvas.height = scene->height();
 
     return canvas;
 }
 
 void MainWindow::handle_rc(const err_t rc)
 {
-    printf("handling_rc = %d\n", rc);
-
     if (!rc)
     {
         canvas_t canvas = init_canvas();
@@ -98,11 +119,19 @@ void MainWindow::openImage()
 
 void MainWindow::scale()
 {
-    // Создание структуры request_t с указанием кода REQUEST_LOAD и имени файла "data.txt"
-    request_t load_request = {.code = REQUEST_SCALE};
+    err_t rc = OK;
+    bool ok;
+    double coeff = QInputDialog::getDouble(this, tr("Scale"), tr("Scale coeff:"), 0, 0, 100, 1, &ok);
 
-    // Обработка запроса на загрузку данных из файла
-    err_t rc = handle_request(load_request);
+    if (ok) {
+        // Создание структуры request_t с указанием кода REQUEST_LOAD и имени файла "data.txt"
+        request_t scale_request = {.code = REQUEST_SCALE, .scale = {coeff, coeff, coeff}};
+
+        // Обработка запроса на загрузку данных из файла
+        rc = handle_request(scale_request);
+    } else
+        rc = INT_ERR;
+
 
     // Обработка ошибки при обработке запроса
     handle_rc(rc);

@@ -11,7 +11,8 @@ void links_init(links_arr_t &links)
 
 err_t allocate_links_arr(links_arr_t &links)
 {
-    links.data = (link_t *) calloc(sizeof(link_t), links.len);
+    int len = links.len;
+    links.data = (link_t *) calloc(links.len, sizeof(link_t));
 
     if (!links.data)
         return MEMORY_ERR;
@@ -49,6 +50,13 @@ err_t read_link(link_t &link, FILE *file)
     return OK;
 }
 
+err_t save_link(link_t &link, FILE *file)
+{
+    fprintf(file, "%lu %lu\n", link.vertex1, link.vertex2);
+
+    return OK;
+}
+
 
 err_t read_links_len(links_arr_t &links, FILE *file)
 {
@@ -57,6 +65,13 @@ err_t read_links_len(links_arr_t &links, FILE *file)
 
     if (!links.len)
         return VALUE_ERR;
+
+    return OK;
+}
+
+err_t save_links_len(links_arr_t &links, FILE *file)
+{
+    fprintf(file, "%lu\n", links.len);
 
     return OK;
 }
@@ -72,6 +87,16 @@ err_t read_links_data(links_arr_t &links, FILE *file)
     return rc;
 }
 
+err_t save_links_data(links_arr_t &links, FILE *file)
+{
+    err_t rc = OK;
+
+    for (size_t i = 0; !rc && i < links.len; i++)
+        rc = save_link(links.data[i], file);
+
+    return rc;
+}
+
 
 err_t read_links(links_arr_t &links, FILE *file)
 {
@@ -82,6 +107,19 @@ err_t read_links(links_arr_t &links, FILE *file)
 
     if (!rc)
         rc = read_links_data(links, file);
+
+    if (rc)
+        destroy_links_arr(links);
+
+    return rc;
+}
+
+err_t save_links(links_arr_t &links, FILE *file)
+{
+    err_t rc = save_links_len(links, file);
+
+    if (!rc)
+        rc = save_links_data(links, file);
 
     if (rc)
         destroy_links_arr(links);
