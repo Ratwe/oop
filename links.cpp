@@ -1,135 +1,268 @@
 #include <stdlib.h>
 
-#include "links.h"
+#include "lines.h"
 
-void links_init(links_arr_t &links)
+void lines_init(lines_arr_t &lines)
 {
-    links.data = NULL;
-    links.len = 0;
+    lines.data = NULL;
+    lines.len = 0;
 }
 
 
-err_t allocate_links_arr(links_arr_t &links)
+err_t allocate_lines_arr(lines_arr_t &lines)
 {
-    int len = links.len;
-    links.data = (link_t *) calloc(links.len, sizeof(link_t));
+    lines.data = (line_t *) calloc(lines.len, sizeof(line_t));
 
-    if (!links.data)
+    if (!lines.data)
         return MEMORY_ERR;
 
     return OK;
 }
 
 
-err_t check_link(const link_t &link, const size_t max_vertex_num)
+err_t check_line(const line_t &line, const size_t max_vertex_num)
 {
-    if (!link.vertex1 || link.vertex1 > max_vertex_num
-        || !link.vertex2 || link.vertex2 > max_vertex_num)
+    if (!line.vertex1 || line.vertex1 > max_vertex_num
+        || !line.vertex2 || line.vertex2 > max_vertex_num)
         return VALUE_ERR;
 
     return OK;
 }
 
 
-err_t check_links(const links_arr_t &links, const size_t max_vertex_num)
+err_t check_lines(const lines_arr_t &lines, const size_t max_vertex_num)
 {
     err_t rc = OK;
 
-    for (size_t i = 0; !rc && i < links.len; i++)
-        rc = check_link(links.data[i], max_vertex_num);
+    for (size_t i = 0; !rc && i < lines.len; i++)
+        rc = check_line(lines.data[i], max_vertex_num);
 
     return OK;
 }
 
 
-err_t read_link(link_t &link, FILE *file)
+err_t read_line(line_t &line, FILE *file)
 {
-    if (fscanf(file, "%lu%lu", &link.vertex1, &link.vertex2) != 2)
+    if (fscanf(file, "%lu%lu", &line.vertex1, &line.vertex2) != 2)
+        return READ_ERR;#include <stdlib.h>
+
+        #include "lines.h"
+
+        void lines_init(lines_arr_t &lines)
+        {
+            lines.data = NULL;
+            lines.len = 0;
+        }
+
+
+        err_t allocate_lines_arr(lines_arr_t &lines)
+        {
+            lines.data = (line_t *) calloc(lines.len, sizeof(line_t));
+
+            if (!lines.data)
+                return MEMORY_ERR;
+
+            return OK;
+        }
+
+
+        err_t check_line(const line_t &line, const size_t max_vertex_num)
+        {
+            if (!line.vertex1 || line.vertex1 > max_vertex_num
+                || !line.vertex2 || line.vertex2 > max_vertex_num)
+                return VALUE_ERR;
+
+            return OK;
+        }
+
+
+        err_t check_lines(const lines_arr_t &lines, const size_t max_vertex_num)
+        {
+            err_t rc = OK;
+
+            for (size_t i = 0; !rc && i < lines.len; i++)
+                rc = check_line(lines.data[i], max_vertex_num);
+
+            return OK;
+        }
+
+
+        err_t read_line(line_t &line, FILE *file)
+        {
+            if (fscanf(file, "%lu%lu", &line.vertex1, &line.vertex2) != 2)
+                return READ_ERR;
+
+            return OK;
+        }
+
+        err_t save_line(line_t &line, FILE *file)
+        {
+            fprintf(file, "%lu %lu\n", line.vertex1, line.vertex2);
+
+            return OK;
+        }
+
+
+        err_t read_lines_len(lines_arr_t &lines, FILE *file)
+        {
+            if (fscanf(file, "%lu", &lines.len) != 1)
+                return READ_ERR;
+
+            if (!lines.len)
+                return VALUE_ERR;
+
+            return OK;
+        }
+
+        err_t save_lines_len(lines_arr_t &lines, FILE *file)
+        {
+            fprintf(file, "%lu\n", lines.len);
+
+            return OK;
+        }
+
+
+        err_t read_lines_data(lines_arr_t &lines, FILE *file)
+        {
+            err_t rc = OK;
+
+            for (size_t i = 0; !rc && i < lines.len; i++)
+                rc = read_line(lines.data[i], file);
+
+            return rc;
+        }
+
+        err_t save_lines_data(lines_arr_t &lines, FILE *file)
+        {
+            err_t rc = OK;
+
+            for (size_t i = 0; !rc && i < lines.len; i++)
+                rc = save_line(lines.data[i], file);
+
+            return rc;
+        }
+
+
+        err_t read_lines(lines_arr_t &lines, FILE *file)
+        {
+            err_t rc = read_lines_len(lines, file);
+
+            if (!rc)
+                rc = allocate_lines_arr(lines);
+
+            if (!rc)
+                rc = read_lines_data(lines, file);
+
+            if (rc)
+                destroy_lines_arr(lines);
+
+            return rc;
+        }
+
+        err_t save_lines(lines_arr_t &lines, FILE *file)
+        {
+            err_t rc = save_lines_len(lines, file);
+
+            if (!rc)
+                rc = save_lines_data(lines, file);
+
+            if (rc)
+                destroy_lines_arr(lines);
+
+            return rc;
+        }
+
+
+        void destroy_lines_arr(lines_arr_t &lines)
+        {
+            free(lines.data);
+            lines_init(lines);
+        }
+
+
+    return OK;
+}
+
+err_t save_line(line_t &line, FILE *file)
+{
+    fprintf(file, "%lu %lu\n", line.vertex1, line.vertex2);
+
+    return OK;
+}
+
+
+err_t read_lines_len(lines_arr_t &lines, FILE *file)
+{
+    if (fscanf(file, "%lu", &lines.len) != 1)
         return READ_ERR;
 
-    return OK;
-}
-
-err_t save_link(link_t &link, FILE *file)
-{
-    fprintf(file, "%lu %lu\n", link.vertex1, link.vertex2);
-
-    return OK;
-}
-
-
-err_t read_links_len(links_arr_t &links, FILE *file)
-{
-    if (fscanf(file, "%lu", &links.len) != 1)
-        return READ_ERR;
-
-    if (!links.len)
+    if (!lines.len)
         return VALUE_ERR;
 
     return OK;
 }
 
-err_t save_links_len(links_arr_t &links, FILE *file)
+err_t save_lines_len(lines_arr_t &lines, FILE *file)
 {
-    fprintf(file, "%lu\n", links.len);
+    fprintf(file, "%lu\n", lines.len);
 
     return OK;
 }
 
 
-err_t read_links_data(links_arr_t &links, FILE *file)
+err_t read_lines_data(lines_arr_t &lines, FILE *file)
 {
     err_t rc = OK;
 
-    for (size_t i = 0; !rc && i < links.len; i++)
-        rc = read_link(links.data[i], file);
+    for (size_t i = 0; !rc && i < lines.len; i++)
+        rc = read_line(lines.data[i], file);
 
     return rc;
 }
 
-err_t save_links_data(links_arr_t &links, FILE *file)
+err_t save_lines_data(lines_arr_t &lines, FILE *file)
 {
     err_t rc = OK;
 
-    for (size_t i = 0; !rc && i < links.len; i++)
-        rc = save_link(links.data[i], file);
+    for (size_t i = 0; !rc && i < lines.len; i++)
+        rc = save_line(lines.data[i], file);
 
     return rc;
 }
 
 
-err_t read_links(links_arr_t &links, FILE *file)
+err_t read_lines(lines_arr_t &lines, FILE *file)
 {
-    err_t rc = read_links_len(links, file);
+    err_t rc = read_lines_len(lines, file);
 
     if (!rc)
-        rc = allocate_links_arr(links);
+        rc = allocate_lines_arr(lines);
 
     if (!rc)
-        rc = read_links_data(links, file);
+        rc = read_lines_data(lines, file);
 
     if (rc)
-        destroy_links_arr(links);
+        destroy_lines_arr(lines);
 
     return rc;
 }
 
-err_t save_links(links_arr_t &links, FILE *file)
+err_t save_lines(lines_arr_t &lines, FILE *file)
 {
-    err_t rc = save_links_len(links, file);
+    err_t rc = save_lines_len(lines, file);
 
     if (!rc)
-        rc = save_links_data(links, file);
+        rc = save_lines_data(lines, file);
 
     if (rc)
-        destroy_links_arr(links);
+        destroy_lines_arr(lines);
 
     return rc;
 }
 
 
-void destroy_links_arr(links_arr_t &links)
+void destroy_lines_arr(lines_arr_t &lines)
 {
-    free(links.data);
-    links_init(links);
+    free(lines.data);
+    lines_init(lines);
 }

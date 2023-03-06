@@ -1,42 +1,48 @@
 #include "draw.h"
 
 // Функция, проецирующая вершину на центр холста
-void project_to_centre(vertex_t &vertex, const double width,const double height)
+void project_to_centre(vertex_t &vertex, const canvas_t &canvas)
 {
-    vertex.x += width / 2;
-    vertex.y += height / 2;
+    vertex.x += canvas.width / 2;
+    vertex.y += canvas.height / 2;
 }
 
 // Функция, рисующая линию на холсте
-void draw_line(const double x1, const double y1, const double x2, const double y2, const canvas_t &canvas)
+void draw_canvas_line(const vertex_t &vertex1, const vertex_t &vertex2, const canvas_t &canvas)
 {
-    canvas.scene->addLine(x1, y1, x2, y2);
+    canvas.scene->addLine(vertex1.x, vertex1.y, vertex2.x, vertex2.y);
+}
+
+// Геттер вершины
+vertex_t get_vertex(const vertex_arr_t &vertexes, const int num)
+{
+    return vertexes.data[num - 1];
 }
 
 // Функция, рисующая линию между двумя вершинами на холсте
-void draw_link(const link_t &link, const vertex_arr_t &vertexes, const canvas_t &canvas)
+void draw_line(const line_t &line, const vertex_arr_t &vertexes, const canvas_t &canvas)
 {
-    vertex_t vertex1 = vertexes.data[link.vertex1 - 1];
-    vertex_t vertex2 = vertexes.data[link.vertex2 - 1];
+    vertex_t vertex1 = get_vertex(vertexes, line.vertex1);
+    vertex_t vertex2 = get_vertex(vertexes, line.vertex2);
 
     // Проецируем вершины на центр холста
-    project_to_centre(vertex1, canvas.width, canvas.height);
-    project_to_centre(vertex2, canvas.width, canvas.height);
+    project_to_centre(vertex1, canvas);
+    project_to_centre(vertex2, canvas);
 
     // Рисуем линию между вершинами
-    draw_line(vertex1.x, vertex1.y, vertex2.x, vertex2.y, canvas);
+    draw_canvas_line(vertex1, vertex2, canvas);
 }
 
 // Функция, рисующая все линии фигуры на холсте
-err_t draw_links(const links_arr_t &links, const vertex_arr_t &vertexes, const canvas_t &canvas)
+err_t draw_lines(const lines_arr_t &lines, const vertex_arr_t &vertexes, const canvas_t &canvas)
 {
     // Проверяем наличие данных
-    if (!links.data || !links.len || !vertexes.data || !vertexes.len)
+    if (!lines.data || !lines.len || !vertexes.data || !vertexes.len)
         return NO_DATA_ERR;
 
     // Рисуем каждую линию в массиве
-    for (size_t i = 0; i < links.len; i++)
-        draw_link(links.data[i], vertexes, canvas);
+    for (size_t i = 0; i < lines.len; i++)
+        draw_line(lines.data[i], vertexes, canvas);
 
     return OK;
 }
@@ -48,7 +54,7 @@ err_t draw_figure(const figure_t &figure, const canvas_t &canvas)
     clear_canvas(canvas);
 
     // Рисуем все линии фигуры
-    err_t rc = draw_links(figure.links, figure.vertexes, canvas);
+    err_t rc = draw_lines(figure.lines, figure.vertexes, canvas);
 
     return rc;
 }

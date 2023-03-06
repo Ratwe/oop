@@ -3,7 +3,7 @@
 
 #include "err.h"
 #include "vertex.h"
-#include "links.h"
+#include "lines.h"
 
 // Псевдоним для типа имени файла
 using filename_t = const char*;
@@ -13,8 +13,10 @@ struct figure_t
 {
     vertex_t centre;    // Центр фигуры
     vertex_arr_t vertexes;   // Массив вершин фигуры
-    links_arr_t links;   // Массив связей между вершинами
+    lines_arr_t lines;   // Массив связей между вершинами
 };
+
+err_t check_file(FILE* file);
 
 // Инициализация фигуры
 figure_t &figure_init(void);

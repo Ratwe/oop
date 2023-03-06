@@ -1,5 +1,5 @@
-#ifndef lineS_H
-#define lineS_H
+#ifndef LINES_H
+#define LINES_H
 
 #include <stdio.h>
 #include "err.h"
@@ -31,4 +31,4 @@ err_t check_lines(const lines_arr_t &lines, const size_t max_vertex_num);
 // Уничтожение массива ребер
 void destroy_lines_arr(lines_arr_t &lines);
 
-#endif // lineS_H
+#endif // LINES_H

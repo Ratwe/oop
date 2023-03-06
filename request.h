@@ -11,9 +11,7 @@ enum request_code_t
     REQUEST_MOVE,   // Перемещение объекта
     REQUEST_SCALE,  // Масштабирование объекта
     REQUEST_TURN,   // Поворот объекта
-    REQUEST_CANVAS, // Изменение параметров холста
     REQUEST_DRAW,   // Отрисовка на холсте
-    REQUEST_QUIT    // Выход из программы
 };
 
 // Структура, представляющая запрос

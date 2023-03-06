@@ -1,4 +1,6 @@
 #include "vertex.h"
+#include "err.h"
+#include "figure.h"
 #include <cmath>
 #include <qDebug>
 
@@ -44,10 +46,12 @@ size_t get_vertexes_num(const vertex_arr_t &vertexes)
 // Если выделение памяти успешно, функция возвращает OK.
 err_t allocate_vertex_arr(vertex_arr_t &vertexes)
 {
-    vertexes.data = (vertex_t *) malloc(sizeof(vertex_t) * vertexes.len);
+    vertex_t *buff = (vertex_t *) malloc(sizeof(vertex_t) * vertexes.len);
 
-    if (!vertexes.data)
+    if (!buff)
         return MEMORY_ERR;
+
+    vertexes.data = buff;
 
     return OK;
 }
@@ -57,6 +61,10 @@ err_t allocate_vertex_arr(vertex_arr_t &vertexes)
 // Возвращаемое значение: код ошибки (OK, READ_ERR)
 err_t read_vertex(vertex_t &vertex, FILE *file)
 {
+    err_t rc = check_file(file);
+    if (rc)
+        return rc;
+
     if (fscanf(file, "%lf%lf%lf", &vertex.x, &vertex.y, &vertex.z) != 3)
         return READ_ERR;
 
@@ -65,6 +73,10 @@ err_t read_vertex(vertex_t &vertex, FILE *file)
 
 err_t save_vertex(vertex_t &vertex, FILE *file)
 {
+    err_t rc = check_file(file);
+    if (rc)
+        return rc;
+
     fprintf(file, "%lf %lf %lf\n", vertex.x, vertex.y, vertex.z);
 
     return OK;
@@ -75,6 +87,10 @@ err_t save_vertex(vertex_t &vertex, FILE *file)
 // Возвращаемое значение: код ошибки (OK, READ_ERR, VALUE_ERR)
 err_t read_vertexes_len(vertex_arr_t &vertexes, FILE *file)
 {
+    err_t rc = check_file(file);
+    if (rc)
+        return rc;
+
     if (fscanf(file, "%lu", &vertexes.len) != 1)
         return READ_ERR;
 
@@ -86,6 +102,10 @@ err_t read_vertexes_len(vertex_arr_t &vertexes, FILE *file)
 
 err_t save_vertexes_len(vertex_arr_t &vertexes, FILE *file)
 {
+    err_t rc = check_file(file);
+    if (rc)
+        return rc;
+
     fprintf(file, "%lu\n", vertexes.len);
 
     return OK;
@@ -96,7 +116,9 @@ err_t save_vertexes_len(vertex_arr_t &vertexes, FILE *file)
 // Возвращаемое значение: код ошибки (OK, READ_ERR)
 err_t read_vertexes_data(vertex_arr_t &vertexes, FILE *file)
 {
-    err_t rc = OK;
+    err_t rc = check_file(file);
+    if (rc)
+        return rc;
 
     for (size_t i = 0; !rc && i < vertexes.len; i++)
         rc = read_vertex(vertexes.data[i], file);
@@ -106,7 +128,9 @@ err_t read_vertexes_data(vertex_arr_t &vertexes, FILE *file)
 
 err_t save_vertexes_data(vertex_arr_t &vertexes, FILE *file)
 {
-    err_t rc = OK;
+    err_t rc = check_file(file);
+    if (rc)
+        return rc;
 
     for (size_t i = 0; !rc && i < vertexes.len; i++)
         rc = save_vertex(vertexes.data[i], file);
@@ -119,7 +143,11 @@ err_t save_vertexes_data(vertex_arr_t &vertexes, FILE *file)
 // Возвращаемое значение: код ошибки (OK, READ_ERR, MEMORY_ERR)
 err_t read_vertexes(vertex_arr_t &vertexes, FILE *file)
 {
-    err_t rc = read_vertexes_len(vertexes, file);
+    err_t rc = check_file(file);
+    if (rc)
+        return rc;
+
+    rc = read_vertexes_len(vertexes, file);
 
     if (!rc)
         rc = allocate_vertex_arr(vertexes);
@@ -135,7 +163,11 @@ err_t read_vertexes(vertex_arr_t &vertexes, FILE *file)
 
 err_t save_vertexes(vertex_arr_t &vertexes, FILE *file)
 {
-    err_t rc = save_vertexes_len(vertexes, file);
+    err_t rc = check_file(file);
+    if (rc)
+        return rc;
+
+    rc = save_vertexes_len(vertexes, file);
 
     if (!rc)
         rc = save_vertexes_data(vertexes, file);
@@ -174,7 +206,7 @@ void xturn_vertex(vertex_t &vertex, const double angle)
     double sin_a = sin(rad_angle); // вычисляем синус угла
     double tmp_y = vertex.y;
 
-    // производим поворот вершины вокруг оси X
+    // производим поворот вершины вокруг оси X через матрицы
     vertex.y = vertex.y * cos_a - vertex.z * sin_a;
     vertex.z = tmp_y * sin_a + vertex.z * cos_a;
 }
@@ -221,8 +253,6 @@ err_t move_vertexes(vertex_arr_t &vertexes, const move_t &move)
 // Масштабирование массива вершин относительно заданной центральной точки
 err_t scale_vertexes(vertex_arr_t &vertexes, const vertex_t &centre, const scale_t &scale)
 {
-    qDebug() << "scale coeffs:" << scale.kx << scale.ky << scale.kz;
-
     if (!vertexes.data || !vertexes.len)
         return NO_DATA_ERR;
 

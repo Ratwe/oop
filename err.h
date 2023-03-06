@@ -30,7 +30,10 @@ enum err_t {
     TURN_ERR,
     UNKNOWN_CODE_ERR,
     INT_ERR,
-    PRINT_ERR
+    PRINT_ERR,
+    ERR_BADF,
+    ERR_IO,
+    ERR_EOF
 };
 
 void handle_error(const err_t code);

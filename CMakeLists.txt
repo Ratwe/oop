@@ -25,10 +25,10 @@ set(PROJECT_SOURCES
         figure.h
         vertex.cpp
         vertex.h
-        links.cpp
-        links.h
         draw.cpp
         draw.h
+        lines.cpp
+        lines.h
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
