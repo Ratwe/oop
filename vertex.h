@@ -2,6 +2,7 @@
 #define VERTEXES_H
 
 #include <stdio.h>
+
 #include "err.h"
 
 // Структура, представляющая вершину в трехмерном пространстве
@@ -43,15 +44,6 @@ struct turn_t
     double z_angle;   // Угол поворота вокруг оси z
 };
 
-// Инициализация вершины
-void vertex_init(vertex_t &vertex);
-
-// Инициализация массива вершин
-void vertexes_init(vertex_arr_t &vertexes);
-
-// Получение количества вершин в массиве
-size_t get_vertexes_num(const vertex_arr_t &vertexes);
-
 // Чтение вершины из файла
 err_t read_vertex(vertex_t &vertex, FILE *file);
 err_t save_vertex(vertex_t &vertex, FILE *file);
@@ -74,7 +66,5 @@ err_t scale_vertexes(vertex_arr_t &vrtxs, const vertex_t &centre,
 err_t turn_vertexes(vertex_arr_t &vrtxs, const vertex_t &centre,
                     const turn_t &turn);
 
-// Уничтожение массива вершин
-void destroy_vertex_arr(vertex_arr_t &vertexes);
 
 #endif // VERTEXES_H

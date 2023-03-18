@@ -4,8 +4,9 @@
 #include "err.h"
 #include "lines.h"
 
-void lines_init(lines_arr_t &lines)
+void lines_init(const figure_t figure)
 {
+    lines_arr_t lines = figure.lines;
     lines.data = NULL;
     lines.len = 0;
 }
@@ -119,11 +120,13 @@ err_t save_lines_data(lines_arr_t &lines, FILE *file)
 }
 
 
-err_t read_lines(lines_arr_t &lines, FILE *file)
+err_t read_lines(figure_t figure, FILE *file)
 {
     err_t rc = check_file(file);
     if (rc)
         return rc;
+
+    lines_arr_t lines = figure.lines;
 
     rc = read_lines_len(lines, file);
 
@@ -134,31 +137,33 @@ err_t read_lines(lines_arr_t &lines, FILE *file)
         rc = read_lines_data(lines, file);
 
     if (rc)
-        destroy_lines_arr(lines);
+        destroy_lines_arr(figure);
 
     return rc;
 }
 
-err_t save_lines(lines_arr_t &lines, FILE *file)
+err_t save_lines(figure_t figure, FILE *file)
 {
     err_t rc = check_file(file);
     if (rc)
         return rc;
 
+    lines_arr_t lines = figure.lines;
     rc = save_lines_len(lines, file);
 
     if (!rc)
         rc = save_lines_data(lines, file);
 
     if (rc)
-        destroy_lines_arr(lines);
+        destroy_lines_arr(figure);
 
     return rc;
 }
 
 
-void destroy_lines_arr(lines_arr_t &lines)
+void destroy_lines_arr(figure_t figure)
 {
+    lines_arr_t lines = figure.lines;
     free(lines.data);
-    lines_init(lines);
+    lines_init(figure);
 }

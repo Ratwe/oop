@@ -7,14 +7,10 @@ err_t handle_request(const request_t request)
     err_t rc = OK;
     static figure_t figure = figure_init();
 
-//    rc = load_figure(figure, FILENAME);
-//    if (rc)
-//        return rc;
-
     switch (request.code)
     {
         case REQUEST_LOAD:
-            rc = load_figure(figure, FILENAME);
+            rc = load_figure(figure, request.filename);
             break;
         case REQUEST_MOVE:
             rc = move_figure(figure, request.move);
@@ -28,15 +24,13 @@ err_t handle_request(const request_t request)
         case REQUEST_DRAW:
             rc = draw_figure(figure, request.canvas);
             break;
+        case REQUEST_SAVE:
+            rc = save_figure(figure, request.filename);
+            break;
         default:
             rc = UNKNOWN_ERR;
             break;
     }
-
-    if (rc)
-        return rc;
-
-    rc = save_figure(figure, FILENAME);
 
     return rc;
 }

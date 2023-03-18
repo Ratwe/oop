@@ -2,7 +2,6 @@
 #define REQUEST_H
 
 #include "draw.h"
-#define FILENAME "D:/Code/QT/lab_01/data.txt"
 
 // Перечисление кодов запросов
 enum request_code_t
@@ -12,6 +11,7 @@ enum request_code_t
     REQUEST_SCALE,  // Масштабирование объекта
     REQUEST_TURN,   // Поворот объекта
     REQUEST_DRAW,   // Отрисовка на холсте
+    REQUEST_SAVE,
 };
 
 // Структура, представляющая запрос
@@ -24,6 +24,7 @@ struct request_t
         scale_t scale;         // Параметры масштабирования объекта
         turn_t turn;           // Параметры поворота объекта
         canvas_t canvas;       // Параметры холста
+        filename_t filename;
     };
 };
 

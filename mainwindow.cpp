@@ -56,6 +56,11 @@ MainWindow::MainWindow(QWidget *parent)
     moveAction->setEnabled(true);
     connect(moveAction, &QAction::triggered, this, &MainWindow::move);
 
+    // Создаем QAction для сохранения изображения и связываем его со слотом save()
+    saveAction = new QAction(tr("&Save"), this);
+    saveAction->setEnabled(true);
+    connect(saveAction, &QAction::triggered, this, &MainWindow::save);
+
     // Создаем меню File и добавляем туда QAction для открытия изображения
     QMenu *fileMenu = menuBar()->addMenu(tr("&File"));
     fileMenu->addAction(openAction);
@@ -65,6 +70,7 @@ MainWindow::MainWindow(QWidget *parent)
     editMenu->addAction(scaleAction);
     editMenu->addAction(rotateAction);
     editMenu->addAction(moveAction);
+    editMenu->addAction(saveAction);
 
     // Создаем QGraphicsScene и QGraphicsView для отображения изображения
     scene = new QGraphicsScene(this);
@@ -101,8 +107,12 @@ void MainWindow::handle_rc(const err_t rc)
 
 void MainWindow::openImage()
 {
+    QString qtext = QInputDialog::getText(nullptr, "Enter filename", "Enter filename:");
+    QByteArray bytearray = qtext.toUtf8();
+    const char* filename = bytearray.constData();
+
     // Создание структуры request_t с указанием кода REQUEST_LOAD и имени файла "data.txt"
-    request_t load_request = {.code = REQUEST_LOAD};
+    request_t load_request = {.code = REQUEST_LOAD, .filename = filename};
 
     // Обработка запроса на загрузку данных из файла
     err_t rc = handle_request(load_request);
@@ -193,6 +203,18 @@ void MainWindow::move()
     }
 
 
+    handle_rc(rc);
+}
+
+void MainWindow::save()
+{
+    // Создание структуры request_t с указанием кода REQUEST_SAVE
+    request_t save_request = {.code = REQUEST_SAVE};
+
+    // Обработка запроса на загрузку данных из файла
+    err_t rc = handle_request(save_request);
+
+    // Обработка ошибки при обработке запроса
     handle_rc(rc);
 }
 

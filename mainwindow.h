@@ -27,6 +27,7 @@ private slots:
     void scale();
     void rotate();
     void move();
+    void save();
 
     void handle_rc(const err_t rc);
     canvas_t init_canvas();
@@ -36,6 +37,7 @@ private:
     QAction *scaleAction;
     QAction *rotateAction;
     QAction *moveAction;
+    QAction *saveAction;
     QGraphicsScene *scene;
     QGraphicsView *view;
     Ui::MainWindow *ui;

@@ -2,11 +2,8 @@
 #define FIGURE_H
 
 #include "err.h"
-#include "vertex.h"
 #include "lines.h"
-
-// Псевдоним для типа имени файла
-using filename_t = const char*;
+#include "vertex.h"
 
 // Структура, представляющая фигуру
 struct figure_t
@@ -15,6 +12,31 @@ struct figure_t
     vertex_arr_t vertexes;   // Массив вершин фигуры
     lines_arr_t lines;   // Массив связей между вершинами
 };
+
+
+// Псевдоним для типа имени файла
+using filename_t = const char*;
+
+// Инициализация вершины
+void vertex_init(const figure_t figure);
+
+// Инициализация массива вершин
+void vertexes_init(const figure_t figure);
+
+// Получение количества вершин в массиве
+size_t get_vertexes_num(const figure_t figure);
+
+// Уничтожение массива вершин
+void destroy_vertex_arr(figure_t figure);
+
+
+
+// Инициализация массива ребер
+void lines_init(const figure_t figure);
+
+// Уничтожение массива ребер
+void destroy_lines_arr(figure_t figure);
+
 
 err_t check_file(FILE* file);
 

@@ -39,9 +39,9 @@ figure_t &figure_init(void)
 {
     static figure_t tmp_figure;
 
-    vertex_init(tmp_figure.centre);         // Инициализация центра фигуры
-    vertexes_init(tmp_figure.vertexes);     // Инициализация массива вершин
-    lines_init(tmp_figure.lines);           // Инициализация массива рёбер
+    vertex_init(tmp_figure);         // Инициализация центра фигуры
+    vertexes_init(tmp_figure);     // Инициализация массива вершин
+    lines_init(tmp_figure);           // Инициализация массива рёбер
 
     return tmp_figure;                      // Возвращает ссылку на статический объект
 }
@@ -69,12 +69,12 @@ err_t read_figure(figure_t &figure, FILE *file)
     // Чтение массива рёбер
     if ((rc = read_lines(figure.lines, file)))
     {
-        destroy_vertex_arr(figure.vertexes);
+        destroy_vertex_arr(figure);
         return rc;
     }
 
     // Проверка связности фигуры
-    if ((rc = check_lines(figure.lines, get_vertexes_num(figure.vertexes))))
+    if ((rc = check_lines(figure.lines, get_vertexes_num(figure))))
         destroy_figure(figure);
 
     return rc;
@@ -158,7 +158,7 @@ err_t turn_figure(figure_t &figure, const turn_t &turn)
 // Уничтожение фигуры
 void destroy_figure(figure_t &figure)
 {
-    vertex_init(figure.centre);
-    destroy_vertex_arr(figure.vertexes);
-    destroy_lines_arr(figure.lines);
+    vertex_init(figure);
+    destroy_vertex_arr(figure);
+    destroy_lines_arr(figure);
 }

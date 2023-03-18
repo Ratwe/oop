@@ -16,8 +16,9 @@ double to_radians(double angle)
 
 // Функция vertex_init() инициализирует координаты вершины нулями.
 // Она принимает структуру vertex_t и изменяет ее поля.
-void vertex_init(vertex_t &vertex)
+void vertex_init(const figure_t figure)
 {
+    vertex_t vertex = figure.centre;
     vertex.x = 0;
     vertex.y = 0;
     vertex.z = 0;
@@ -26,8 +27,9 @@ void vertex_init(vertex_t &vertex)
 // Функция vertexes_init() инициализирует массив вершин нулями.
 // Она устанавливает указатель на ноль и длину массива в ноль.
 // Функция не изменяет память, зарезервированную для массива.
-void vertexes_init(vertex_arr_t &vertexes)
+void vertexes_init(const figure_t figure)
 {
+    vertex_arr_t vertexes = figure.vertexes;
     vertexes.data = NULL;
     vertexes.len = 0;
 }
@@ -141,11 +143,13 @@ err_t save_vertexes_data(vertex_arr_t &vertexes, FILE *file)
 // Функция чтения всех вершин из файла
 // Входные параметры: ссылка на массив вершин, указатель на файл
 // Возвращаемое значение: код ошибки (OK, READ_ERR, MEMORY_ERR)
-err_t read_vertexes(vertex_arr_t &vertexes, FILE *file)
+err_t read_vertexes(figure_t figure, FILE *file)
 {
     err_t rc = check_file(file);
     if (rc)
         return rc;
+
+    vertex_arr_t vertexes = figure.vertexes;
 
     rc = read_vertexes_len(vertexes, file);
 
@@ -156,16 +160,18 @@ err_t read_vertexes(vertex_arr_t &vertexes, FILE *file)
         rc = read_vertexes_data(vertexes, file);
 
     if (rc)
-        destroy_vertex_arr(vertexes);
+        destroy_vertex_arr(figure);
 
     return rc;
 }
 
-err_t save_vertexes(vertex_arr_t &vertexes, FILE *file)
+err_t save_vertexes(figure_t figure, FILE *file)
 {
     err_t rc = check_file(file);
     if (rc)
         return rc;
+
+    vertex_arr_t vertexes = figure.vertexes;
 
     rc = save_vertexes_len(vertexes, file);
 
@@ -173,7 +179,7 @@ err_t save_vertexes(vertex_arr_t &vertexes, FILE *file)
         rc = save_vertexes_data(vertexes, file);
 
     if (rc)
-        destroy_vertex_arr(vertexes);
+        destroy_vertex_arr(figure);
 
     return rc;
 }
@@ -321,8 +327,9 @@ err_t turn_vertexes(vertex_arr_t &vertexes, const vertex_t &centre, const turn_t
 }
 
 // Освобождает память, выделенную под массив вершин.
-void destroy_vertex_arr(vertex_arr_t &vertexes)
+void destroy_vertex_arr(figure_t figure)
 {
+    vertex_arr_t vertexes = figure.vertexes;
     free(vertexes.data);
-    vertexes_init(vertexes);
+    vertexes_init(figure);
 }
